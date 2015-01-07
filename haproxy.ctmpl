@@ -1,0 +1,19 @@
+global
+    maxconn {{key "service/haproxy/maxconn"}}
+
+defaults
+    log global
+    mode http
+    option httplog
+    option forwardfor
+    timeout client 5000
+    timeout connect 50000
+    timeout server 50000
+
+listen http-in
+    bind *:8000{{range service "sinatra"}}
+    server {{.Node}} {{.Address}}:{{.Port}}{{end}}
+
+listen admin
+    bind *:8080
+    stats enable
